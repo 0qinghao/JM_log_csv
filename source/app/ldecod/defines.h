@@ -24,7 +24,7 @@
 #undef TRACE
 #endif
 #if defined _DEBUG
-# define TRACE           0     //!< 0:Trace off 1:Trace on 2:detailed CABAC context information
+# define TRACE           1     //!< 0:Trace off 1:Trace on 2:detailed CABAC context information
 #else
 # define TRACE           0     //!< 0:Trace off 1:Trace on 2:detailed CABAC context information
 #endif
@@ -34,19 +34,19 @@
 #define EXT_VERSION         "(FRExt)"
 
 #define DUMP_DPB                  0    //!< Dump DPB info for debug purposes
-#define PRINTREFLIST              0    //!< Print ref list info for debug purposes
+#define PRINTREFLIST              1    //!< Print ref list info for debug purposes
 #define PAIR_FIELDS_IN_OUTPUT     0    //!< Pair field pictures for output purposes
 #define IMGTYPE                   1    //!< Define imgpel size type. 0 implies byte (cannot handle >8 bit depths) and 1 implies unsigned short
-#define ENABLE_FIELD_CTX          1    //!< Enables Field mode related context types for CABAC
-#define ENABLE_HIGH444_CTX        1    //!< Enables High 444 profile context types for CABAC. 
+#define ENABLE_FIELD_CTX          0    //!< Enables Field mode related context types for CABAC
+#define ENABLE_HIGH444_CTX        0    //!< Enables High 444 profile context types for CABAC. 
 #define ZEROSNR                   0    //!< PSNR computation method
 #define ENABLE_OUTPUT_TONEMAPPING 1    //!< enable tone map the output if tone mapping SEI present
 #define JCOST_CALC_SCALEUP        1    //!< 1: J = (D<<LAMBDA_ACCURACY_BITS)+Lambda*R; 0: J = D + ((Lambda*R+Rounding)>>LAMBDA_ACCURACY_BITS)
-#define DISABLE_ERC               0    //!< Disable any error concealment processes
+#define DISABLE_ERC               1    //!< Disable any error concealment processes
 #define JM_PARALLEL_DEBLOCK       0    //!< Enables Parallel Deblocking
 #define SIMULCAST_ENABLE          0    //!< to test the decoder
 
-#define MVC_EXTENSION_ENABLE      1    //!< enable support for the Multiview High Profile
+#define MVC_EXTENSION_ENABLE      0    //!< enable support for the Multiview High Profile
 #define ENABLE_DEC_STATS          0    //!< enable decoder statistics collection
 
 #define MVC_INIT_VIEW_ID          -1
