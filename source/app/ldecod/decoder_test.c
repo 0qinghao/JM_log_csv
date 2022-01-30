@@ -19,6 +19,7 @@
 #include "win32.h"
 #include "h264decoder.h"
 #include "configfile.h"
+#include "stat.h"
 
 #define DECOUTPUT_TEST      0
 
@@ -30,6 +31,8 @@
 #define DECOUTPUT_VIEW0_FILENAME  "H264_Decoder_Output_View0.yuv"
 #define DECOUTPUT_VIEW1_FILENAME  "H264_Decoder_Output_View1.yuv"
 
+DecTopStat decTopStat;
+DecoderParams *p_Dec;
 
 static void Configure(InputParameters *p_Inp, int ac, char *av[])
 {
@@ -240,6 +243,9 @@ int main(int argc, char **argv)
   }
 
   //decoding;
+#if MB_STAT_EN
+  decTopStat.m_decFrameNum = 0;
+#endif
   do
   {
     iRet = DecodeOneFrame(&pDecPicList);
@@ -248,6 +254,11 @@ int main(int argc, char **argv)
       //process the decoded picture, output or display;
       iFramesOutput += WriteOneFrame(pDecPicList, hFileDecOutput0, hFileDecOutput1, 0);
       iFramesDecoded++;
+    #if MB_STAT_EN
+      Dec_Calc_MB_Info(p_Dec->p_Vid);
+      Print_MB_Stat(p_Dec->p_Vid);
+      decTopStat.m_decFrameNum++;
+    #endif
     }
     else
     {
@@ -259,6 +270,10 @@ int main(int argc, char **argv)
   iRet = FinitDecoder(&pDecPicList);
   iFramesOutput += WriteOneFrame(pDecPicList, hFileDecOutput0, hFileDecOutput1 , 1);
   iRet = CloseDecoder();
+
+#if MB_STAT_EN
+  Dec_MBStat_DeInit();
+#endif
 
   //quit;
   if(hFileDecOutput0>=0)

@@ -60,6 +60,7 @@
 #include "fast_memory.h"
 
 #include "mc_prediction.h"
+#include "stat.h"
 extern int testEndian(void);
 void reorder_lists(Slice *currSlice);
 
@@ -1727,6 +1728,9 @@ process_nalu:
     case NALU_TYPE_PPS:
       //printf ("Found NALU_TYPE_PPS\n");
       ProcessPPS(p_Vid, nalu);
+    #if MB_STAT_EN
+      Dec_MBStat_Init(&(p_Vid->SeqParSet[0]));
+    #endif
       break;
     case NALU_TYPE_SPS:
       //printf ("Found NALU_TYPE_SPS\n");

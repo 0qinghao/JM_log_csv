@@ -33,6 +33,8 @@
 #define VERSION             "19.0"
 #define EXT_VERSION         "(FRExt)"
 
+#define MB_STAT_EN                1
+
 #define DUMP_DPB                  0    //!< Dump DPB info for debug purposes
 #define PRINTREFLIST              1    //!< Print ref list info for debug purposes
 #define PAIR_FIELDS_IN_OUTPUT     0    //!< Pair field pictures for output purposes
