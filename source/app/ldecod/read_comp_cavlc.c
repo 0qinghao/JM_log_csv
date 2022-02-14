@@ -20,6 +20,7 @@
 #include "fast_memory.h"
 #include "transform.h"
 #include "mb_access.h"
+#include <stat.h>
 
 #if TRACE
 #define TRACE_STRING(s) strncpy(currSE.tracestring, s, TRACESTRING_SIZE)
@@ -1869,6 +1870,20 @@ static void read_CBP_and_coeffs_from_NAL_CAVLC_420(Macroblock *currMB)
       currMB->luma_transform_size_8x8_flag = (Boolean) currSE.value1;
     }
 
+#if MB_STAT_EN
+    const DecodingEnvironment* de_cabac = &((currSlice->partArr[partMap[SE_MBTYPE]]).de_cabac);
+    if (currSlice->active_pps->entropy_coding_mode_flag)
+    {
+      decTopStat.MBStat[currSlice->current_mb_nr].m_MBHeaderBits += *(de_cabac->Dcodestrm_len) * 8 - de_cabac->DbitsLeft + 1 - decTopStat.m_BitCnts;
+      decTopStat.m_BitCnts = *(de_cabac->Dcodestrm_len) * 8 - de_cabac->DbitsLeft + 1;
+    }
+    else
+    {
+      decTopStat.MBStat[currSlice->current_mb_nr].m_MBHeaderBits += currSlice->partArr[0].bitstream->frame_bitoffset - decTopStat.m_BitCnts;
+      decTopStat.m_BitCnts = currSlice->partArr[0].bitstream->frame_bitoffset;
+    }
+#endif
+
     //=====   DQUANT   =====
     //----------------------
     // Delta quant only if nonzero coeffs
@@ -1899,6 +1914,19 @@ static void read_CBP_and_coeffs_from_NAL_CAVLC_420(Macroblock *currMB)
   }
   else
   {
+#if MB_STAT_EN
+    const DecodingEnvironment* de_cabac = &((currSlice->partArr[partMap[SE_MBTYPE]]).de_cabac);
+    if (currSlice->active_pps->entropy_coding_mode_flag)
+    {
+      decTopStat.MBStat[currSlice->current_mb_nr].m_MBHeaderBits += *(de_cabac->Dcodestrm_len) * 8 - de_cabac->DbitsLeft + 1 - decTopStat.m_BitCnts;
+      decTopStat.m_BitCnts = *(de_cabac->Dcodestrm_len) * 8 - de_cabac->DbitsLeft + 1;
+    }
+    else
+    {
+      decTopStat.MBStat[currSlice->current_mb_nr].m_MBHeaderBits += currSlice->partArr[0].bitstream->frame_bitoffset - decTopStat.m_BitCnts;
+      decTopStat.m_BitCnts = currSlice->partArr[0].bitstream->frame_bitoffset;
+    }
+#endif
     cbp = currMB->cbp;  
     read_delta_quant(&currSE, dP, currMB, partMap, SE_DELTA_QUANT_INTRA);
 

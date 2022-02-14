@@ -61,6 +61,7 @@
 
 #include "mc_prediction.h"
 #include "stat.h"
+#include <elements.h>
 extern int testEndian(void);
 void reorder_lists(Slice *currSlice);
 
@@ -2513,6 +2514,19 @@ void decode_one_slice(Slice *currSlice)
 
   while (end_of_slice == FALSE) // loop over macroblocks
   {
+#if MB_STAT_EN
+    //decTopStat.m_BitCnts = currSlice->partArr[0].bitstream->read_len * 8 - currSlice->partArr[0].de_cabac.DbitsLeft + 1;
+    const byte* partMap = assignSE2partition[currSlice->dp_mode];
+    const DecodingEnvironment* de_cabac = &((currSlice->partArr[partMap[SE_MBTYPE]]).de_cabac);
+    if (currSlice->active_pps->entropy_coding_mode_flag)
+    {
+      decTopStat.m_BitCnts = *(de_cabac->Dcodestrm_len) * 8 - de_cabac->DbitsLeft + 1;
+    }
+    else
+    {
+      decTopStat.m_BitCnts = currSlice->partArr[0].bitstream->frame_bitoffset;
+    }
+#endif
 
 #if TRACE
     fprintf(p_Dec->p_trace,"\n*********** POC: %i (I/P) MB: %i Slice: %i Type %d **********\n", currSlice->ThisPOC, currSlice->current_mb_nr, currSlice->current_slice_nr, currSlice->slice_type);
@@ -2532,6 +2546,17 @@ void decode_one_slice(Slice *currSlice)
 
 #if (DISABLE_ERC == 0)
     ercWriteMBMODEandMV(currMB);
+#endif
+
+#if MB_STAT_EN
+    if (currSlice->active_pps->entropy_coding_mode_flag)
+    {
+      decTopStat.MBStat[currSlice->current_mb_nr].m_MBDataBits = *(de_cabac->Dcodestrm_len) * 8 - de_cabac->DbitsLeft + 1 - decTopStat.m_BitCnts;
+    }
+    else
+    {
+      decTopStat.MBStat[currSlice->current_mb_nr].m_MBDataBits = currSlice->partArr[0].bitstream->frame_bitoffset - decTopStat.m_BitCnts;
+    }
 #endif
 
     end_of_slice = exit_macroblock(currSlice, (!currSlice->mb_aff_frame_flag|| currSlice->current_mb_nr%2));
