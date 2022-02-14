@@ -904,7 +904,7 @@ deploy
 .vs/
 .vscode/
 *.pyc
-
+*.h264
 *.yuv
 *.bin
 *.srt
