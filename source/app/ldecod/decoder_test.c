@@ -243,8 +243,19 @@ int main(int argc, char **argv)
   }
 
   //decoding;
-#if MB_STAT_EN
   decTopStat.m_decFrameNum = 0;
+  decTopStat.m_isMBInit = FALSE;
+  decTopStat.m_isFrameInit = FALSE;
+//#if MB_STAT_EN
+//#endif
+#if FRAME_STAT_EN
+  decTopStat.m_frameBits = 0;
+  decTopStat.m_HdrBits = 0;
+  decTopStat.m_DBits = 0;
+  decTopStat.m_IBits = 0;
+  decTopStat.m_PBits = 0;
+  decTopStat.m_maxQP = 0;
+  decTopStat.m_minQP = 0xff;
 #endif
   do
   {
@@ -257,8 +268,13 @@ int main(int argc, char **argv)
     #if MB_STAT_EN
       Dec_Calc_MB_Info(p_Dec->p_Vid);
       Print_MB_Stat(p_Dec->p_Vid);
-      decTopStat.m_decFrameNum++;
     #endif
+    #if FRAME_STAT_EN
+      Dec_FrameStat_Init(p_Dec->p_Vid);
+      Dec_Calc_Frame_Info(p_Dec->p_Vid);
+      Print_Frame_Stat();
+    #endif
+      decTopStat.m_decFrameNum++;
     }
     else
     {
@@ -273,6 +289,9 @@ int main(int argc, char **argv)
 
 #if MB_STAT_EN
   Dec_MBStat_DeInit();
+#endif
+#if FRAME_STAT_EN
+  Dec_FrameStat_DeInit();
 #endif
 
   //quit;
