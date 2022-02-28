@@ -244,23 +244,26 @@ int main(int argc, char **argv)
 
   //decoding;
   decTopStat.m_decFrameNum = 0;
+  decTopStat.m_IFrameNum = 0;
+  decTopStat.t_avgFlick = 0;
   decTopStat.m_isMBInit = FALSE;
   decTopStat.m_isFrameInit = FALSE;
 //#if MB_STAT_EN
 //#endif
 #if FRAME_STAT_EN
-  decTopStat.m_frameBits = 0;
-  decTopStat.m_HdrBits = 0;
-  decTopStat.m_DBits = 0;
-  decTopStat.m_IBits = 0;
-  decTopStat.m_PBits = 0;
-  decTopStat.m_maxQP = 0;
-  decTopStat.m_minQP = 0xff;
+  decTopStat.t_maxQP = 0;
+  decTopStat.t_minQP = 0xff;
+  decTopStat.t_maxPSNR = 0;
+  decTopStat.t_minPSNR = 0xff;
+  decTopStat.t_avgPSNR = 0;
+  decTopStat.t_maxBits = 0;
+  decTopStat.t_minBits = 0x00ffffff;
+  decTopStat.t_avgBits = 0;
 #endif
   do
   {
     iRet = DecodeOneFrame(&pDecPicList);
-    if(iRet==DEC_EOS || iRet==DEC_SUCCEED)
+    if (iRet == DEC_EOS || iRet == DEC_SUCCEED)
     {
       //process the decoded picture, output or display;
       iFramesOutput += WriteOneFrame(pDecPicList, hFileDecOutput0, hFileDecOutput1, 0);
@@ -272,7 +275,7 @@ int main(int argc, char **argv)
     #if FRAME_STAT_EN
       Dec_FrameStat_Init(p_Dec->p_Vid);
       Dec_Calc_Frame_Info(p_Dec->p_Vid);
-      Print_Frame_Stat();
+      Print_Frame_Stat(iFramesDecoded,iRet);
     #endif
       decTopStat.m_decFrameNum++;
     }
